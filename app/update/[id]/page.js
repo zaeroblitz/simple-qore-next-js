@@ -203,7 +203,7 @@ const UpdatePage = () => {
                 name="title"
                 value={formInput.title}
                 onChange={handleChange}
-                placeholder="Enter product title"
+                placeholder="Enter title"
                 required
                 className="bg-white px-4 py-3 rounded-lg border border-slate-100 shadow-sm focus:ring-cyan-500 focus:ring-1 outline-none"
               />
@@ -217,7 +217,7 @@ const UpdatePage = () => {
                 name="description"
                 value={formInput.description}
                 onChange={handleChange}
-                placeholder="Enter product description"
+                placeholder="Enter description"
                 required
                 className="bg-white px-4 py-3 rounded-lg border border-slate-100 shadow-sm focus:ring-cyan-500 focus:ring-1 outline-none"
               />
