@@ -40,6 +40,30 @@ const CreatePage = () => {
     }
   };
 
+  const removeData = async (rowId) => {
+    try {
+      const { data } = await qoreInstance.post("/v1/execute", {
+        operations: [
+          {
+            operation: "Delete",
+            instruction: {
+              name: "remove",
+              table: "data_files",
+              condition: {
+                $and: [{ id: rowId }],
+              },
+            },
+          },
+        ],
+      });
+
+      return data.results.remove;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value, files } = e.target;
 
@@ -63,12 +87,13 @@ const CreatePage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    let response;
 
     try {
       setIsLoading(true);
 
       // Insert to Qorebase
-      const response = await qoreInstance.post("/v1/execute", {
+      response = await qoreInstance.post("/v1/execute", {
         operations: [
           {
             operation: "Insert",
@@ -85,7 +110,8 @@ const CreatePage = () => {
       });
 
       if (response) {
-        formInput.files.forEach(async (file, index) => {
+        for (let index = 0; index < formInput.files.length; index++) {
+          const file = formInput.files[index];
           if (file) {
             const formData = new FormData();
             formData.append(`file_${index + 1}`, file);
@@ -107,11 +133,11 @@ const CreatePage = () => {
               }
             );
           }
-        });
+        }
 
         toast({
           title: "Success!",
-          description: "Successfully create a new data & uploading file",
+          description: "Successfully submit new data",
         });
 
         setFormInput({
@@ -123,6 +149,10 @@ const CreatePage = () => {
         router.push("/");
       }
     } catch (error) {
+      if (response) {
+        await removeData(response.data.results.insertData[0].id);
+      }
+
       console.error("Error submitting form:", error);
       toast({
         variant: "destructive",
@@ -181,7 +211,7 @@ const CreatePage = () => {
                 type="file"
                 id={`file_${index}`}
                 name={`file_${index}`}
-                accept="image/*"
+                accept="*"
                 onChange={handleChange}
                 className="bg-white px-4 py-3 rounded-lg border border-slate-100 shadow-sm focus:ring-cyan-500 focus:ring-1 outline-none"
               />

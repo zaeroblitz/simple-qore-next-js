@@ -56,7 +56,7 @@ const UpdatePage = () => {
       });
     } catch (error) {
       console.error(error);
-      return error;
+      throw error;
     }
   };
 
@@ -121,7 +121,8 @@ const UpdatePage = () => {
       });
 
       if (response && formInput.files) {
-        formInput.files.forEach(async (file, index) => {
+        for (let index = 0; index < formInput.files.length; index++) {
+          const file = formInput.files[index];
           if (file) {
             const formData = new FormData();
             formData.append(`file_${index + 1}`, file);
@@ -133,7 +134,7 @@ const UpdatePage = () => {
             });
 
             // Upload File
-            const { data } = await qoreInstance.post(
+            await qoreInstance.post(
               `/v1/files/upload?token=${token}`,
               formData,
               {
@@ -143,7 +144,7 @@ const UpdatePage = () => {
               }
             );
           }
-        });
+        }
 
         toast({
           title: "Success!",
@@ -229,7 +230,7 @@ const UpdatePage = () => {
                   type="file"
                   id={`file_${index}`}
                   name={`file_${index}`}
-                  accept="image/*"
+                  accept="*"
                   onChange={handleChange}
                   className="bg-white px-4 py-3 rounded-lg border border-slate-100 shadow-sm focus:ring-cyan-500 focus:ring-1 outline-none"
                 />
